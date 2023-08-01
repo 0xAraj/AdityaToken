@@ -69,11 +69,11 @@ contract AdityaToken {
 
     function transferFrom(address owner, address spender, uint amount) public {
         require(
-            s_approvalAmount[msg.sender][spender] >= amount,
+            s_approvalAmount[owner][spender] >= amount,
             "Not enough approved!!"
         );
         require(s_addressToBalance[owner] >= amount, "Not enough funds!!");
-        s_approvalAmount[msg.sender][spender] -= amount;
+        s_approvalAmount[owner][spender] -= amount;
         s_addressToBalance[owner] -= amount;
         s_addressToBalance[spender] += amount;
     }

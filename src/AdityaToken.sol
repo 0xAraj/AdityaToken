@@ -48,6 +48,7 @@ contract AdityaToken {
 
     function transfer(address recipient, uint amount) public {
         require(s_addressToBalance[msg.sender] >= amount, "Not enough funds!!");
+        require(amount > 0, "Amount is zero!!");
         s_addressToBalance[msg.sender] -= amount;
         s_addressToBalance[recipient] += amount;
 

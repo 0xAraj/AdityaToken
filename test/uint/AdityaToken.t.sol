@@ -135,4 +135,44 @@ contract AdityaTokenTest is Test {
         emit Approval(msg.sender, USER1, 100);
         adityaToken.approve(USER1, 100);
     }
+
+    function testTransferFromFailsIfNotEnoughBalanceIsApproved() public {
+        vm.prank(msg.sender);
+        adityaToken.approve(USER1, 100);
+
+        vm.prank(USER2);
+        vm.expectRevert();
+        adityaToken.transferFrom(msg.sender, USER1, 200);
+    }
+
+    function testTransferFromFailsIfOwnerHasNotEnoughBalance() public {
+        vm.prank(msg.sender);
+        adityaToken.approve(USER1, 100);
+
+        uint balalceOfOwner = adityaToken.balanceOf(msg.sender);
+
+        vm.prank(msg.sender);
+        adityaToken.transfer(USER2, balalceOfOwner);
+
+        vm.expectRevert();
+        adityaToken.transferFrom(msg.sender, USER1, 100);
+    }
+
+    function testTransferFromPassWhenOwnerHasEnoughBalanceAndApproved() public {
+        vm.prank(msg.sender);
+        adityaToken.approve(USER1, 100);
+
+        uint initialBalanceOfOwner = adityaToken.balanceOf(msg.sender);
+        uint initialBalanceOfUser1 = adityaToken.balanceOf(USER1);
+
+        adityaToken.transferFrom(msg.sender, USER1, 100);
+
+        uint finalBalanceOfOwner = adityaToken.balanceOf(msg.sender);
+        uint finalBalamceOfUser1 = adityaToken.balanceOf(USER1);
+
+        assert(finalBalamceOfUser1 == initialBalanceOfUser1 + 100);
+        assert(
+            finalBalanceOfOwner == initialBalanceOfOwner - finalBalamceOfUser1
+        );
+    }
 }

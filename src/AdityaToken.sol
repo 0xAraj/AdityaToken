@@ -16,6 +16,7 @@ contract AdityaToken {
     string public s_symbol;
     uint256 public immutable i_decimal;
     uint256 public immutable i_totalSupply;
+    address public immutable i_owner;
 
     mapping(address => uint) public s_addressToBalance;
     mapping(address owner => mapping(address spender => uint amount))
@@ -36,8 +37,9 @@ contract AdityaToken {
         s_name = "AdityaToken";
         s_symbol = "ADT";
         i_decimal = 8;
-        i_totalSupply = 10000000000000;
-        s_addressToBalance[msg.sender] = i_totalSupply;
+        i_totalSupply = 100000000;
+        i_owner = msg.sender;
+        s_addressToBalance[i_owner] = i_totalSupply;
     }
 
     function balanceOf(address owner) public view returns (uint) {

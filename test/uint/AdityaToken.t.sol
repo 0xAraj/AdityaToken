@@ -16,6 +16,11 @@ contract AdityaTokenTest is Test {
         address indexed to,
         uint indexed amount
     );
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint indexed amount
+    );
 
     function setUp() external {
         DeployAdityaToken deployAdityaToken = new DeployAdityaToken();
@@ -102,5 +107,32 @@ contract AdityaTokenTest is Test {
         vm.expectEmit(address(adityaToken));
         emit Transfer(msg.sender, USER1, 200);
         adityaToken.transfer(USER1, 200);
+    }
+
+    function testApproveFailsIfOwnerHasNotEnoughBalance() public {
+        vm.prank(msg.sender);
+        adityaToken.transfer(USER1, 200);
+
+        vm.prank(USER1);
+        vm.expectRevert();
+        adityaToken.approve(USER2, 300);
+    }
+
+    function testApproveIfOwnerHasEnoughBalance() public {
+        uint initialApprovalOfUser1 = adityaToken.allowance(msg.sender, USER1);
+        assert(initialApprovalOfUser1 == 0);
+
+        vm.prank(msg.sender);
+        adityaToken.approve(USER1, 100);
+
+        uint finalApprovalOfUser1 = adityaToken.allowance(msg.sender, USER1);
+        assert(finalApprovalOfUser1 == 100);
+    }
+
+    function testApprovalShouldEmitWhenItsSuccess() public {
+        vm.prank(msg.sender);
+        vm.expectEmit(address(adityaToken));
+        emit Approval(msg.sender, USER1, 100);
+        adityaToken.approve(USER1, 100);
     }
 }

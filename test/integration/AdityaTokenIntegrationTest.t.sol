@@ -9,6 +9,8 @@ import {BalanceOf, Transfer, ApproveAndAllowance, TransferFrom} from "../../scri
 
 contract AdityaTokenIntegrationTest is Test {
     AdityaToken adityaToken;
+    address deployerAddress = 0x1AA18da866Bc70A78111b4C3F65883Dc8D8A0D96;
+    address USER1 = 0x83fD3360Bf77a6E0E27e3F8a31759Ff7d37CB534;
 
     function setUp() external {
         DeployAdityaToken deployAdityaToken = new DeployAdityaToken();
@@ -16,51 +18,35 @@ contract AdityaTokenIntegrationTest is Test {
     }
 
     function testIntegrationOfAdityaToken() public {
-        //BalanceOf funcition is testing
+        //BalanceOf function is testing
 
         BalanceOf balanceOf = new BalanceOf();
-        uint amount = balanceOf.balanceOf(
-            0x1AA18da866Bc70A78111b4C3F65883Dc8D8A0D96
-        );
-        assert(amount == 100000000);
+        uint amount = balanceOf.balanceOf(deployerAddress);
+        assert(amount == 100000000); //100000000 is initial total supply
 
         // Tansfer function is testing
 
         Transfer transfer = new Transfer();
         uint256 transferAmount = 1000;
-        transfer.transfer(
-            0x83fD3360Bf77a6E0E27e3F8a31759Ff7d37CB534,
-            transferAmount
-        );
+        transfer.transfer(USER1, transferAmount);
 
-        uint256 value = balanceOf.balanceOf(
-            0x83fD3360Bf77a6E0E27e3F8a31759Ff7d37CB534
-        );
+        uint256 value = balanceOf.balanceOf(USER1);
         assert(value == transferAmount);
 
         // Approve and Allowance funciton is testing
 
         ApproveAndAllowance approveAndAllownace = new ApproveAndAllowance();
-        uint256 approvedAmount = approveAndAllownace.approve(
-            0x83fD3360Bf77a6E0E27e3F8a31759Ff7d37CB534,
-            300
-        );
+        uint256 approvedAmount = approveAndAllownace.approve(USER1, 300);
         assert(approvedAmount == 300);
 
         // TransferFrom function is testing
 
         TransferFrom transferFrom = new TransferFrom();
-        transferFrom.transferFrom(
-            0x1AA18da866Bc70A78111b4C3F65883Dc8D8A0D96,
-            0x83fD3360Bf77a6E0E27e3F8a31759Ff7d37CB534,
-            300
-        );
+        transferFrom.transferFrom(deployerAddress, USER1, 300);
 
-        uint balanceOfSpender = balanceOf.balanceOf(
-            0x83fD3360Bf77a6E0E27e3F8a31759Ff7d37CB534
-        );
+        uint balanceOfSpender = balanceOf.balanceOf(USER1);
 
         console.log(balanceOfSpender);
-        assert(balanceOfSpender == 1300); // Above we transfered 1000 and here 300, so total 1000+300 = 1300
+        assert(balanceOfSpender == 1300); // Above we transfered 1000 in transfer function and here 300, so total 1000+300 = 1300
     }
 }
